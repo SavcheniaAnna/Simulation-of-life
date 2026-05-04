@@ -1,0 +1,16 @@
+image: registry.esiea.fr/gauthier.heiss/evaluation-projet-c:latest
+
+stages:
+  - evaluate
+
+evaluate:
+  stage: evaluate
+  script:
+    - curl -fsSL "https://gitlab.esiea.fr/gauthier.heiss/evaluation-projet-c/-/raw/main/evaluate.sh" -o evaluate.sh
+    - sh evaluate.sh
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - rapport.txt
+      - clang_tidy_report.txt
