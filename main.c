@@ -47,7 +47,7 @@ if (!fond_menu) {
 }
 
 // Definir ou la placer (NULL = toute la fenetre)
-    SDL_Rect dst = {0, 0, LARGEUR, HAUTEUR};
+SDL_Rect dst = {0, 0, LARGEUR, HAUTEUR};
 
 
 // Charger une police (chemin, taille en points)
@@ -73,7 +73,6 @@ char *lignes[] = {
 };
 int nb_lignes = 10;
 
-
 /* 3. Boucle principale */
 int running = 1;
 SDL_Event event;
@@ -88,11 +87,6 @@ while (running) {
             running = 0;
     }
 
-//------------------------------------------------------------------------------------
-
-    // Fond noir
-    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-    SDL_RenderClear(ren);
 
     //Afficher le fond_menu
     SDL_RenderCopy(ren, fond_menu, NULL, &dst);
@@ -111,6 +105,44 @@ while (running) {
         SDL_Rect dst_texte = {437, 310 + i * 25, w, h};  // 25 pixels entre chaque ligne
         SDL_RenderCopy(ren, texte, NULL, &dst_texte);
         SDL_DestroyTexture(texte);
+
+    
+    // Bouton Start
+    SDL_Rect bouton_start = {740, 575, 110, 35}; // x, y, largeur, hauteur
+    SDL_SetRenderDrawColor(ren, 92, 78, 52, 180);
+    SDL_RenderFillRect(ren, &bouton_start);
+    // contour
+    SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+    SDL_RenderDrawRect(ren, &bouton_start);
+    // texte sur le bouton
+    SDL_Surface *surf_btn = TTF_RenderUTF8_Blended(font, "Start", blanc_casse);
+    SDL_Texture *texte_btn = SDL_CreateTextureFromSurface(ren, surf_btn);
+    SDL_FreeSurface(surf_btn);
+
+    int wb, hb;
+    SDL_QueryTexture(texte_btn, NULL, NULL, &wb, &hb);
+    SDL_Rect dst_btn = {bouton_start.x + (bouton_start.w - wb) / 2, bouton_start.y + (bouton_start.h - hb) / 2, wb, hb};
+    SDL_RenderCopy(ren, texte_btn, NULL, &dst_btn);
+    SDL_DestroyTexture(texte_btn);
+
+
+    // Bouton Paramètres
+    SDL_Rect bouton_par = {540, 575, 110, 35}; // x, y, largeur, hauteur
+    SDL_SetRenderDrawColor(ren, 92, 78, 52, 180);
+    SDL_RenderFillRect(ren, &bouton_par);
+    // contour blanc-casse
+    SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+    SDL_RenderDrawRect(ren, &bouton_par);
+    // texte sur le bouton
+    SDL_Surface *surf_btn_par = TTF_RenderUTF8_Blended(font, "Paramètres", blanc_casse);
+    SDL_Texture *texte_btn_par = SDL_CreateTextureFromSurface(ren, surf_btn_par);
+    SDL_FreeSurface(surf_btn_par);
+
+    int wbp, hbp;
+    SDL_QueryTexture(texte_btn_par, NULL, NULL, &wbp, &hbp);
+    SDL_Rect dst_btn_par = {bouton_par.x + (bouton_par.w - wbp) / 2, bouton_par.y + (bouton_par.h - hbp) / 2, wbp, hbp};
+    SDL_RenderCopy(ren, texte_btn_par, NULL, &dst_btn_par);
+    SDL_DestroyTexture(texte_btn_par);
 }
 
 
