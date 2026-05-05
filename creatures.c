@@ -1,7 +1,7 @@
 /* J'ai décidé de ne pas écrire toute la logique concérnant les créatures dans main.c,
    car dans ce cas main.c va contenir des centaines de lignes mélangées:
    la gestion SDL, le menu, la simulation ET toute la logique des animaux,
-   ce qui va devenir illisible.
+   ce qui va devenir illisible. De plius ce serai plus simple d'ajouter des nouveaux animaux plus tard.
    J'ai donc créé ce fichier séparé où je mets uniquement tout ce qui concerne
    les créatures : leur création, leur initialisation. */
 
