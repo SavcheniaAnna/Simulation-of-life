@@ -618,6 +618,7 @@ while (running) {
                     if (individus[i]->vivant == 1)
                         deplacer_individu(individus[i]);
                         mourir_de_faim(individus[i]);
+                        mourir_de_vieillesse(individus[i]);
                 }
                 dernier_tour = maintenant;
             }

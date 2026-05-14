@@ -72,6 +72,7 @@ typedef struct {
 // taille, vitesse et force_faim sont propres a chaque individu
 typedef struct {
     Espece *espece;            // pointeur vers son espèce
+    int sante;
     int age;                   
     int x;                     
     int y;                     
@@ -118,7 +119,9 @@ Individu *creer_individu(Espece *espece, int x, int y);
 
 void deplacer_individu(Individu *ind);
 
+void mourir(Individu *ind);
 void mourir_de_faim(Individu *ind);
+void mourir_de_vieillesse(Individu *ind);
 
 /*
 // crée un nouvel individu de deux parents

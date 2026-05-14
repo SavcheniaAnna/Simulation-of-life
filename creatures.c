@@ -174,6 +174,7 @@ Individu *creer_individu(Espece *espece, int x, int y)
     }
 
     ind->espece = espece;
+    ind->sante = espece->sante;  // je copie la sante de l'espece
     ind->age = 0;
     ind->x = x;
     ind->y = y;
@@ -290,13 +291,24 @@ void deplacer_individu(Individu *ind)
     ind->y = nouveau_y;
 }
 
+void mourir(Individu *ind) {
+    ind->vivant = 0;
+    ind->espece->nb_individus_vivants--;
+    ind->espece->type->nb_individus_vivants--;
+}
+
 void mourir_de_faim(Individu *ind)
 {
-    ind->espece->sante -= ind->force_faim;
+    ind->sante -= ind->force_faim;  // sante de l'individu pas de l'espece !
+    if (ind->sante <= 0) {
+        mourir(ind);
+    }
+}
 
-    if (ind->espece->sante <= 0) {
-        ind->vivant = 0;
-        ind->espece->nb_individus_vivants--;
-        ind->espece->type->nb_individus_vivants--;
+void mourir_de_vieillesse(Individu *ind)
+{
+    ind->age++;
+    if (ind->age >= ind->espece->age_max) {
+        mourir(ind);
     }
 }
