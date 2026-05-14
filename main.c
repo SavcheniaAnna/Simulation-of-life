@@ -3,6 +3,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 
+#include "creatures.h"
+#include <stdlib.h>
+#include <time.h>
+
 // Taille de la fenetre
 #define LARGEUR 1400
 #define HAUTEUR 800
@@ -41,6 +45,20 @@ SDL_Window *win = SDL_CreateWindow(
 
 SDL_Renderer *ren = SDL_CreateRenderer(win, -1,
     SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+
+// initialisation du générateur aleatoire
+srand(time(NULL));
+
+// initialisation des types et espèces
+initialiser_types();
+initialiser_especes();
+
+// tableaux d'individus et de parasites
+Individu *individus[MAX_INDIVIDUS];
+Parasite *parasites[MAX_PARASITES];
+int nb_individus = 0;
+int nb_parasites = 0;
 
 
 // Charger l’image dans une texture GPU
@@ -208,7 +226,7 @@ while (running) {
                 int index_case = 0;
                 for (int i = 0; i < nb_lignes_par; i++) {
                     if (lignes_par[i][0] == ' ') {
-                        SDL_Rect case_rect = {720, 100 + i * 26, 35, 20};
+                        SDL_Rect case_rect = {760, 140 + i * 30, 35, 20};
                         if (event.button.x >= case_rect.x &&
                             event.button.x <= case_rect.x + case_rect.w &&
                             event.button.y >= case_rect.y &&
@@ -418,7 +436,19 @@ while (running) {
 
     else if (etat == ETAT_SIMULATION) {
         
-        // nouveau fenêntre
+        // fond noir pour la simulation
+        SDL_Rect zone_monde = {0, 0, 1000, 800};
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_RenderFillRect(ren, &zone_monde);
+
+        // fond vert pour le panneau d'information
+        SDL_Rect zone_panneau = {1000, 0, 400, 800};
+        SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
+        SDL_RenderFillRect(ren, &zone_panneau);
+
+        // ligne de séparation entre les deux zones
+        SDL_SetRenderDrawColor(ren, 245, 245, 220, 255);
+        SDL_RenderDrawLine(ren, 1000, 0, 1000, 800);
     }
 
 

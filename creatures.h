@@ -53,6 +53,21 @@ typedef struct {
     int age_max;                
 } Espece;
 
+
+// un parasite a ses propres caractéristiques
+// Au debut il infecte la créature la plus proche et lui fait des dégâts chaque tour
+// IMPORTANT : il ne peut pas infecter un autre parasite ou une herbe
+// Si la créature infectée est mangée, le parasite infecte qui l'a mangé.
+// Si la créature infectée meurt de faim, le parasite meurt avec lui. 
+
+typedef struct {
+    Espece *espece;     // pointeur vers son espece
+    int degats;         // HP enleves a la victime par tour
+    int duree_vie;      
+    int vivant;         
+} Parasite;
+
+
 // un individu
 // taille, vitesse et force_faim sont propres a chaque individu
 typedef struct {
@@ -68,19 +83,6 @@ typedef struct {
     int vitesse;               // affecte sur distance max parcourue par tour
     int force_faim;            // HP perdus par tour à cause de faim
 } Individu;
-
-// un parasite a ses propres caractéristiques
-// Au debut il infecte la créature la plus proche et lui fait des dégâts chaque tour
-// IMPORTANT : il ne peut pas infecter un autre parasite ou une herbe
-// Si la créature infectée est mangée, le parasite infecte qui l'a mangé.
-// Si la créature infectée meurt de faim, le parasite meurt avec lui. 
-
-typedef struct {
-    Espece *espece;     // pointeur vers son espece
-    int degats;         // HP enleves a la victime par tour
-    int duree_vie;      
-    int vivant;         
-} Parasite;
 
 
 // extern ça veut dire que ces variables existent dans creatures.c et que je peux les utiliser ici sans les recréer
@@ -109,9 +111,10 @@ void initialiser_especes(void);
 // fonction du random
 int rand_entre(int min, int max);
 
-// crée un individu et un parasite
-Individu *creer_individu(Espece *espece, int x, int y);
+// crée un parasite et un individu
 Parasite *creer_parasite(Espece *espece);
+Individu *creer_individu(Espece *espece, int x, int y);
+
 
 /*
 // crée un nouvel individu de deux parents
