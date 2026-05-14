@@ -610,13 +610,14 @@ while (running) {
         SDL_RenderCopy(ren, texte_sim_accel, NULL, &dst_sim_accel);
 
 
-        // mouvement (chaque tour)
+        // mouvement + faim (chaque tour)
         if (simulation_active == 1) {
             Uint32 maintenant = SDL_GetTicks();
             if (maintenant - dernier_tour >= (Uint32)delai_tour) {
                 for (int i = 0; i < nb_individus; i++) {
                     if (individus[i]->vivant == 1)
                         deplacer_individu(individus[i]);
+                        mourir_de_faim(individus[i]);
                 }
                 dernier_tour = maintenant;
             }

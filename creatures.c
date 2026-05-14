@@ -289,3 +289,14 @@ void deplacer_individu(Individu *ind)
     ind->x = nouveau_x;
     ind->y = nouveau_y;
 }
+
+void mourir_de_faim(Individu *ind)
+{
+    ind->espece->sante -= ind->force_faim;
+
+    if (ind->espece->sante <= 0) {
+        ind->vivant = 0;
+        ind->espece->nb_individus_vivants--;
+        ind->espece->type->nb_individus_vivants--;
+    }
+}

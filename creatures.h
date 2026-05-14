@@ -118,6 +118,8 @@ Individu *creer_individu(Espece *espece, int x, int y);
 
 void deplacer_individu(Individu *ind);
 
+void mourir_de_faim(Individu *ind);
+
 /*
 // crée un nouvel individu de deux parents
 // 1 caractéristique vient du parent A, 1 du parent B, 1 est aléatoire
