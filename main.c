@@ -173,7 +173,7 @@ SDL_QueryTexture(texte_btn_sauv, NULL, NULL, &wbs, &hbs);
 // Les eléments pour le fenêtre Simulation
 
 //Bouton Start
-SDL_Rect bouton_sim_start = {1010, 700, 120, 35};
+SDL_Rect bouton_sim_start = {1030, 720, 100, 35};
 SDL_Surface *surf_sim_start = TTF_RenderUTF8_Blended(font, "Start", blanc_casse);
 SDL_Texture *texte_sim_start = SDL_CreateTextureFromSurface(ren, surf_sim_start);
 SDL_FreeSurface(surf_sim_start);
@@ -187,7 +187,7 @@ int delai_tour = 200;  // un tour toutes les 200ms
 
 
 // bouton Pause
-SDL_Rect bouton_sim_pause = {1150, 700, 120, 35};
+SDL_Rect bouton_sim_pause = {1150, 720, 100, 35};
 SDL_Surface *surf_sim_pause = TTF_RenderUTF8_Blended(font, "Pause", blanc_casse);
 SDL_Texture *texte_sim_pause = SDL_CreateTextureFromSurface(ren, surf_sim_pause);
 SDL_FreeSurface(surf_sim_pause);
@@ -196,6 +196,15 @@ SDL_QueryTexture(texte_sim_pause, NULL, NULL, &wsp, &hsp);
 
 // simulation en cours ou en pause
 int simulation_active = 0;
+
+
+// bouton Etape
+SDL_Rect bouton_sim_etape = {1270, 720, 100, 35};
+SDL_Surface *surf_sim_etape = TTF_RenderUTF8_Blended(font, "Etape", blanc_casse);
+SDL_Texture *texte_sim_etape = SDL_CreateTextureFromSurface(ren, surf_sim_etape);
+SDL_FreeSurface(surf_sim_etape);
+int wse, hse;
+SDL_QueryTexture(texte_sim_etape, NULL, NULL, &wse, &hse);
 
 
 
@@ -310,6 +319,19 @@ while (running) {
                     event.button.y <= bouton_sim_pause.y + bouton_sim_pause.h){
 
                     simulation_active = !simulation_active; // on met en pause ou on continue la simulation
+                }
+
+                // clic Etape
+                if (simulation_active == 0) {
+                    if (event.button.x >= bouton_sim_etape.x &&
+                        event.button.x <= bouton_sim_etape.x + bouton_sim_etape.w &&
+                        event.button.y >= bouton_sim_etape.y &&
+                        event.button.y <= bouton_sim_etape.y + bouton_sim_etape.h) {
+                        for (int i = 0; i < nb_individus; i++) {
+                            if (individus[i]->vivant == 1)
+                                deplacer_individu(individus[i]);
+                        }
+                    }
                 }
             }
         }
@@ -542,6 +564,16 @@ while (running) {
         SDL_RenderCopy(ren, texte_sim_pause, NULL, &dst_sim_pause);
 
 
+        // bouton Etape
+        SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
+        SDL_RenderFillRect(ren, &bouton_sim_etape);
+        SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+        SDL_RenderDrawRect(ren, &bouton_sim_etape);
+        SDL_Rect dst_sim_etape = {bouton_sim_etape.x + (bouton_sim_etape.w - wse) / 2,
+                                bouton_sim_etape.y + (bouton_sim_etape.h - hse) / 2, wse, hse};
+        SDL_RenderCopy(ren, texte_sim_etape, NULL, &dst_sim_etape);
+
+
         // mouvement (chaque tour)
         if (simulation_active == 1) {
             Uint32 maintenant = SDL_GetTicks();
@@ -607,6 +639,7 @@ SDL_DestroyTexture(texte_btn_rev);
 SDL_DestroyTexture(texte_btn_sauv);
 SDL_DestroyTexture(texte_sim_start);
 SDL_DestroyTexture(texte_sim_pause);
+SDL_DestroyTexture(texte_sim_etape);
 IMG_Quit();
 SDL_DestroyRenderer(ren);
 SDL_DestroyWindow(win);
