@@ -115,7 +115,7 @@ SDL_QueryTexture(texte_btn_par, NULL, NULL, &wbp, &hbp);
 
 
 
-// Les eléments pour le fenêtre Paramètress
+// Les eléments pour le fenêtre Paramètres
 
 //Bouton Revenir
 SDL_Rect bouton_rev = {50, 30, 110, 35};
@@ -167,6 +167,18 @@ SDL_Texture *texte_btn_sauv = SDL_CreateTextureFromSurface(ren, surf_btn_sauv);
 SDL_FreeSurface(surf_btn_sauv);
 int wbs, hbs;
 SDL_QueryTexture(texte_btn_sauv, NULL, NULL, &wbs, &hbs);
+
+
+
+// Les eléments pour le fenêtre Simulation
+
+//Bouton Start
+SDL_Rect bouton_sim_start = {1010, 700, 120, 35};
+SDL_Surface *surf_sim_start = TTF_RenderUTF8_Blended(font, "Start", blanc_casse);
+SDL_Texture *texte_sim_start = SDL_CreateTextureFromSurface(ren, surf_sim_start);
+SDL_FreeSurface(surf_sim_start);
+int wss, hss;
+SDL_QueryTexture(texte_sim_start, NULL, NULL, &wss, &hss);
 
 
 
@@ -237,6 +249,37 @@ while (running) {
                         }
 
                         index_case++;
+                    }
+                }
+            }
+            else if (etat == ETAT_SIMULATION){
+                if (event.button.x >= bouton_sim_start.x &&
+                    event.button.x <= bouton_sim_start.x + bouton_sim_start.w &&
+                    event.button.y >= bouton_sim_start.y &&
+                    event.button.y <= bouton_sim_start.y + bouton_sim_start.h) {
+            
+                    // initialiser les individus, sachant les valeurs des parametres
+                    nb_individus = 0;
+
+                    // On a besoin de créer ce tableu, car on passe une espèce en paramètre à la fonction creer_individu, mais on sait pas quelle espèce correspond à quel index de nb_par_espece
+                    Espece *toutes_especes[11] = {
+                        &especes_predateurs[0], &especes_predateurs[1],
+                        &especes_herbivores[0], &especes_herbivores[1],
+                        &especes_oiseaux[0],    &especes_oiseaux[1],
+                        &especes_poissons[0],   &especes_poissons[1],
+                        &especes_parasites[0],  &especes_parasites[1],
+                        &especes_herbes[0]
+                    };
+
+                    for (int e = 0; e < 11; e++) {
+                        for (int i = 0; i < nb_par_espece[e]; i++) {
+                            if (e == 8 || e == 9){
+                                parasites[nb_parasites++] = creer_parasite(toutes_especes[e]);
+                            }
+                            else{
+                                individus[nb_individus++] = creer_individu(toutes_especes[e], rand_entre(20, 980), rand_entre(20, 780)); // position random
+                            }
+                        }
                     }
                 }
             }
@@ -449,8 +492,54 @@ while (running) {
         // ligne de séparation entre les deux zones
         SDL_SetRenderDrawColor(ren, 245, 245, 220, 255);
         SDL_RenderDrawLine(ren, 1000, 0, 1000, 800);
-    }
 
+        // bouton Start
+        SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
+        SDL_RenderFillRect(ren, &bouton_sim_start);
+        SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+        SDL_RenderDrawRect(ren, &bouton_sim_start);
+        SDL_Rect dst_sim_start = {bouton_sim_start.x + (bouton_sim_start.w - wss) / 2,
+                                  bouton_sim_start.y + (bouton_sim_start.h - hss) / 2, wss, hss};
+        SDL_RenderCopy(ren, texte_sim_start, NULL, &dst_sim_start);
+
+
+        // dessiner tous les individus
+        for (int i = 0; i < nb_individus; i++) {
+            if (individus[i]->vivant == 1){
+
+                // couleur selon l'espece
+                if (individus[i]->espece == &especes_predateurs[0])
+                    SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
+
+                else if (individus[i]->espece == &especes_predateurs[1])
+                    SDL_SetRenderDrawColor(ren, 180, 0, 0, 255);
+
+                else if (individus[i]->espece == &especes_herbivores[0])
+                    SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
+
+                else if (individus[i]->espece == &especes_herbivores[1])
+                    SDL_SetRenderDrawColor(ren, 0, 180, 0, 255);
+
+                else if (individus[i]->espece == &especes_oiseaux[0])
+                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+
+                else if (individus[i]->espece == &especes_oiseaux[1])
+                    SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
+
+                else if (individus[i]->espece == &especes_poissons[0])
+                    SDL_SetRenderDrawColor(ren, 0, 150, 255, 255);
+
+                else if (individus[i]->espece == &especes_poissons[1])
+                    SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+
+                else if (individus[i]->espece == &especes_herbes[0])
+                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+                SDL_Rect rect = {individus[i]->x, individus[i]->y, individus[i]->taille, individus[i]->taille};
+                SDL_RenderFillRect(ren, &rect);
+            }
+        }
+    }
 
     // Affichage du frame
     SDL_RenderPresent(ren);
