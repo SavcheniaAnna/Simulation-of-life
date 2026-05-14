@@ -173,7 +173,7 @@ SDL_QueryTexture(texte_btn_sauv, NULL, NULL, &wbs, &hbs);
 // Les eléments pour le fenêtre Simulation
 
 //Bouton Start
-SDL_Rect bouton_sim_start = {1030, 720, 100, 35};
+SDL_Rect bouton_sim_start = {1030, 685, 100, 35};
 SDL_Surface *surf_sim_start = TTF_RenderUTF8_Blended(font, "Start", blanc_casse);
 SDL_Texture *texte_sim_start = SDL_CreateTextureFromSurface(ren, surf_sim_start);
 SDL_FreeSurface(surf_sim_start);
@@ -187,7 +187,7 @@ int delai_tour = 200;  // un tour toutes les 200ms
 
 
 // bouton Pause
-SDL_Rect bouton_sim_pause = {1150, 720, 100, 35};
+SDL_Rect bouton_sim_pause = {1150, 685, 100, 35};
 SDL_Surface *surf_sim_pause = TTF_RenderUTF8_Blended(font, "Pause", blanc_casse);
 SDL_Texture *texte_sim_pause = SDL_CreateTextureFromSurface(ren, surf_sim_pause);
 SDL_FreeSurface(surf_sim_pause);
@@ -199,12 +199,24 @@ int simulation_active = 0;
 
 
 // bouton Etape
-SDL_Rect bouton_sim_etape = {1270, 720, 100, 35};
+SDL_Rect bouton_sim_etape = {1270, 685, 100, 35};
 SDL_Surface *surf_sim_etape = TTF_RenderUTF8_Blended(font, "Etape", blanc_casse);
 SDL_Texture *texte_sim_etape = SDL_CreateTextureFromSurface(ren, surf_sim_etape);
 SDL_FreeSurface(surf_sim_etape);
 int wse, hse;
 SDL_QueryTexture(texte_sim_etape, NULL, NULL, &wse, &hse);
+
+
+// bouton Accélération
+SDL_Rect bouton_sim_accel = {1150, 740, 110, 35};
+SDL_Surface *surf_sim_accel = TTF_RenderUTF8_Blended(font, "Accélération", blanc_casse);
+SDL_Texture *texte_sim_accel = SDL_CreateTextureFromSurface(ren, surf_sim_accel);
+SDL_FreeSurface(surf_sim_accel);
+int wsa, hsa;
+SDL_QueryTexture(texte_sim_accel, NULL, NULL, &wsa, &hsa);
+
+// on vérifie si on a accélération
+int accel_active = 0;
 
 
 
@@ -331,6 +343,20 @@ while (running) {
                             if (individus[i]->vivant == 1)
                                 deplacer_individu(individus[i]);
                         }
+                    }
+                }
+
+                //clic Accélération
+                if (event.button.x >= bouton_sim_accel.x &&
+                    event.button.x <= bouton_sim_accel.x + bouton_sim_accel.w &&
+                    event.button.y >= bouton_sim_accel.y &&
+                    event.button.y <= bouton_sim_accel.y + bouton_sim_accel.h) {
+                    accel_active = !accel_active;
+                    if (accel_active == 1){
+                        delai_tour = 50;   // plus vite
+                    }
+                    else{
+                        delai_tour = 200;  // vitesse normale
                     }
                 }
             }
@@ -574,6 +600,16 @@ while (running) {
         SDL_RenderCopy(ren, texte_sim_etape, NULL, &dst_sim_etape);
 
 
+        // bouton Acceleration
+        SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
+        SDL_RenderFillRect(ren, &bouton_sim_accel);
+        SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+        SDL_RenderDrawRect(ren, &bouton_sim_accel);
+        SDL_Rect dst_sim_accel = {bouton_sim_accel.x + (bouton_sim_accel.w - wsa) / 2,
+                                bouton_sim_accel.y + (bouton_sim_accel.h - hsa) / 2, wsa, hsa};
+        SDL_RenderCopy(ren, texte_sim_accel, NULL, &dst_sim_accel);
+
+
         // mouvement (chaque tour)
         if (simulation_active == 1) {
             Uint32 maintenant = SDL_GetTicks();
@@ -640,6 +676,7 @@ SDL_DestroyTexture(texte_btn_sauv);
 SDL_DestroyTexture(texte_sim_start);
 SDL_DestroyTexture(texte_sim_pause);
 SDL_DestroyTexture(texte_sim_etape);
+SDL_DestroyTexture(texte_sim_accel);
 IMG_Quit();
 SDL_DestroyRenderer(ren);
 SDL_DestroyWindow(win);
