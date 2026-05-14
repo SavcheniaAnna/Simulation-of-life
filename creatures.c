@@ -258,3 +258,34 @@ Parasite *creer_parasite(Espece *espece)
 
     return p;
 }
+
+void deplacer_individu(Individu *ind)
+{
+    // l'herbe ne bouge pas
+    if (ind->vitesse == 0)
+        return;
+
+    // direction aleatoire entre -vitesse et +vitesse
+    int dx = rand_entre(-ind->vitesse, ind->vitesse);
+    int dy = rand_entre(-ind->vitesse, ind->vitesse);
+
+    // nouvelle position
+    int nouveau_x = ind->x + dx;
+    int nouveau_y = ind->y + dy;
+
+    // on verifie les limites de la zone de simulation
+    if (nouveau_x < 10)
+        nouveau_x = 10;
+
+    if (nouveau_x > 980)
+        nouveau_x = 980;
+
+    if (nouveau_y < 10)
+        nouveau_y = 10;
+
+    if (nouveau_y > 780)
+        nouveau_y = 780;
+
+    ind->x = nouveau_x;
+    ind->y = nouveau_y;
+}
