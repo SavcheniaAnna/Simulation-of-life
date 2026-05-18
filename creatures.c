@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "creatures.h"
 
 // je déclare mes types
@@ -48,18 +49,8 @@ void initialiser_types(void)
     type_herbe.nb_individus_vivants = 0;
 }
 
-// j'initialise toutes les espèces avec leurs caractéristiques
-/*
-chaîne alimentaire :
-prédateur -> herbivore, oiseau, prédateur plus petit
-herbivore -> herbe
-oiseau    -> poisson
-poisson   -> herbe
-parasite  -> prédateur, herbivore, oiseau, poisson (pas herbe ni parasite)
 
-prédateur peut mourir à cause de faim ou vieillesse
-parasites peuvent mourir à cause de mort de leur victime de faim, à cause de leur vieillesse
-*/
+// j'initialise toutes les espèces avec leurs caractéristiques
 void initialiser_especes(void)
 {
     // Prédateurs
@@ -291,11 +282,13 @@ void deplacer_individu(Individu *ind)
     ind->y = nouveau_y;
 }
 
+
 void mourir(Individu *ind) {
     ind->vivant = 0;
     ind->espece->nb_individus_vivants--;
     ind->espece->type->nb_individus_vivants--;
 }
+
 
 void mourir_de_faim(Individu *ind)
 {
@@ -312,3 +305,70 @@ void mourir_de_vieillesse(Individu *ind)
         mourir(ind);
     }
 }
+
+
+double distance(Individu *ind1, Individu *ind2){
+    double dist = sqrt(pow((ind1->x - ind2->x),2) + pow((ind1->y - ind2->y),2)); //pow - mettre en puissance, sqrt - calculer la racine
+    return dist;
+}
+
+
+/*
+chaîne alimentaire :
+prédateur -> herbivore, oiseau (1 chance sur 2 que l'oiseau s'echappe en volant), prédateur plus petit
+herbivore -> herbe
+oiseau    -> poisson
+poisson   -> herbe
+parasite  -> prédateur, herbivore, oiseau, poisson (pas herbe ni parasite)
+
+prédateur peut mourir à cause de faim ou vieillesse
+parasites peuvent mourir à cause de mort de leur victime de faim, à cause de leur vieillesse
+*/
+void manger(Individu *ind1, Individu *ind2) {
+
+    //j'utilise &type_predateur pour ne faire pas la comparaison chaque fois avec strcmp (strcmp(ind1->espece->type->nom, "Predateur") == 0)
+    if (ind1->espece->type == &type_predateur) {
+        if (ind2->espece->type == &type_predateur) {
+            if (ind1->taille > ind2->taille) {
+                ind1->sante += ind2->espece->valeur_nutritive;
+                mourir(ind2);
+            }
+            else if (ind1->taille < ind2->taille) {
+                ind2->sante += ind1->espece->valeur_nutritive;
+                mourir(ind1);
+            }
+        }
+        else if (ind2->espece->type == &type_herbivore) {
+            ind1->sante += ind2->espece->valeur_nutritive;
+            mourir(ind2);
+        }
+        else if (ind2->espece->type == &type_oiseau) {
+            // Chance 1/2
+            if (rand_entre(0, 1) == 0) {
+                ind1->sante += ind2->espece->valeur_nutritive;
+                mourir(ind2);
+            }
+        }
+    }
+
+    if (ind1->espece->type == &type_herbivore || ind1->espece->type == &type_poisson) {
+        if (ind2->espece->type == &type_herbe) {
+            ind1->sante += ind2->espece->valeur_nutritive;
+            mourir(ind2);
+        }
+    }
+
+    if (ind1->espece->type == &type_oiseau) {
+        if (ind2->espece->type == &type_poisson) {
+            ind1->sante += ind2->espece->valeur_nutritive;
+            mourir(ind2);
+        }
+    }
+}
+
+
+/*
+// crée un nouvel individu de deux parents
+// 1 caractéristique vient du parent A, 1 du parent B, 1 est aléatoire
+Individu *reproduire(Individu *parent_a, Individu *parent_b);
+*/

@@ -123,11 +123,10 @@ void mourir(Individu *ind);
 void mourir_de_faim(Individu *ind);
 void mourir_de_vieillesse(Individu *ind);
 
-/*
-// crée un nouvel individu de deux parents
-// 1 caractéristique vient du parent A, 1 du parent B, 1 est aléatoire
-Individu *reproduire(Individu *parent_a, Individu *parent_b);
-*/
+double distance(Individu *ind1, Individu *ind2);
+
+void manger(Individu *ind1, Individu *ind2);
+
 
 // le #ifndef au début et le #endif ici servent à éviter que ce fichier soit lu deux fois par le compilateur si plusieurs fichiers l'incluent
 // ça évite les erreurs de "structure declaree deux fois"
