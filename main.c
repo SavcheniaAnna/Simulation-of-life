@@ -342,6 +342,9 @@ while (running) {
                         for (int i = 0; i < nb_individus; i++) {
                             if (individus[i]->vivant == 1)
                                 deplacer_individu(individus[i]);
+                                mourir_de_faim(individus[i]);
+                                mourir_de_vieillesse(individus[i]);
+                                individus[i]->tours_depuis_repro++;
                         }
                     }
                 }
@@ -619,6 +622,7 @@ while (running) {
                         deplacer_individu(individus[i]);
                         mourir_de_faim(individus[i]);
                         mourir_de_vieillesse(individus[i]);
+                        individus[i]->tours_depuis_repro++;
                 }
                 dernier_tour = maintenant;
             }

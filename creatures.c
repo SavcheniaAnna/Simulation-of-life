@@ -367,8 +367,59 @@ void manger(Individu *ind1, Individu *ind2) {
 }
 
 
-/*
-// crée un nouvel individu de deux parents
-// 1 caractéristique vient du parent A, 1 du parent B, 1 est aléatoire
-Individu *reproduire(Individu *parent_a, Individu *parent_b);
-*/
+void reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_individus){
+    if (ind1->espece == ind2->espece &&
+        ind1->tours_depuis_repro > ind1->espece->intervalle_repro &&
+        ind2->tours_depuis_repro > ind2->espece->intervalle_repro) {
+
+        // on cree le bebe a la position randome
+        Individu *ind_bebe = creer_individu(ind1->espece, rand_entre(10,980), rand_entre(10,780));
+
+        // caractéristique du parent 1
+        int c1 = rand_entre(1, 3);
+        if (c1 == CAR_TAILLE){
+            ind_bebe->taille = ind1->taille;
+        }
+        else if (c1 == CAR_VITESSE){
+            ind_bebe->vitesse = ind1->vitesse;
+        } 
+        else{
+            ind_bebe->force_faim = ind1->force_faim;
+        }
+
+        // caractéristique du parent 2
+        int c2 = rand_entre(1, 3);
+        while (c2 == c1){
+            c2 = rand_entre(1, 3);
+        }
+
+        if (c2 == CAR_TAILLE){
+            ind_bebe->taille = ind2->taille;
+        }
+        else if (c2 == CAR_VITESSE){
+            ind_bebe->vitesse = ind2->vitesse;
+        } 
+        else{
+            ind_bebe->force_faim = ind2->force_faim;
+        }
+
+        // troisème caractéristique aleatoire
+        if ((c1 == CAR_TAILLE && c2 == CAR_VITESSE) || (c2 == CAR_TAILLE && c1 == CAR_VITESSE)){
+            ind_bebe->force_faim = rand_entre(ind1->force_faim, ind2->force_faim);
+        } 
+        else if ((c1 == CAR_TAILLE && c2 == CAR_FORCE_FAIM ) || (c2 == CAR_TAILLE && c1 == CAR_FORCE_FAIM)){
+            ind_bebe->vitesse = rand_entre(ind1->vitesse, ind2->vitesse);
+        }
+        else{
+            ind_bebe->taille = rand_entre(ind1->taille, ind2->taille);
+        }
+
+        // j'ajoute le bebe dans le tableau
+        individus[*nb_individus] = ind_bebe;
+        (*nb_individus)++;
+
+        // je remet les compteurs de reproduction a zero
+        ind1->tours_depuis_repro = 0;
+        ind2->tours_depuis_repro = 0;
+    }
+}
