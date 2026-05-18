@@ -125,9 +125,9 @@ void mourir_de_vieillesse(Individu *ind);
 
 double distance(Individu *ind1, Individu *ind2);
 
-void manger(Individu *ind1, Individu *ind2);
+int manger(Individu *ind1, Individu *ind2);
 
-void reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_individus);
+int reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_individus);
 
 // le #ifndef au début et le #endif ici servent à éviter que ce fichier soit lu deux fois par le compilateur si plusieurs fichiers l'incluent
 // ça évite les erreurs de "structure declaree deux fois"

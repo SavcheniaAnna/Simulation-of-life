@@ -324,7 +324,7 @@ parasite  -> prédateur, herbivore, oiseau, poisson (pas herbe ni parasite)
 prédateur peut mourir à cause de faim ou vieillesse
 parasites peuvent mourir à cause de mort de leur victime de faim, à cause de leur vieillesse
 */
-void manger(Individu *ind1, Individu *ind2) {
+int manger(Individu *ind1, Individu *ind2) {
 
     //j'utilise &type_predateur pour ne faire pas la comparaison chaque fois avec strcmp (strcmp(ind1->espece->type->nom, "Predateur") == 0)
     if (ind1->espece->type == &type_predateur) {
@@ -332,21 +332,25 @@ void manger(Individu *ind1, Individu *ind2) {
             if (ind1->taille > ind2->taille) {
                 ind1->sante += ind2->espece->valeur_nutritive;
                 mourir(ind2);
+                return 1;  // action reussie
             }
             else if (ind1->taille < ind2->taille) {
                 ind2->sante += ind1->espece->valeur_nutritive;
                 mourir(ind1);
+                return 1;
             }
         }
         else if (ind2->espece->type == &type_herbivore) {
             ind1->sante += ind2->espece->valeur_nutritive;
             mourir(ind2);
+            return 1;
         }
         else if (ind2->espece->type == &type_oiseau) {
             // Chance 1/2
             if (rand_entre(0, 1) == 0) {
                 ind1->sante += ind2->espece->valeur_nutritive;
                 mourir(ind2);
+                return 1;
             }
         }
     }
@@ -355,6 +359,7 @@ void manger(Individu *ind1, Individu *ind2) {
         if (ind2->espece->type == &type_herbe) {
             ind1->sante += ind2->espece->valeur_nutritive;
             mourir(ind2);
+            return 1;
         }
     }
 
@@ -362,12 +367,15 @@ void manger(Individu *ind1, Individu *ind2) {
         if (ind2->espece->type == &type_poisson) {
             ind1->sante += ind2->espece->valeur_nutritive;
             mourir(ind2);
+            return 1;
         }
     }
+
+    return 0; // rien ne s'est passe
 }
 
 
-void reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_individus){
+int reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_individus){
     if (ind1->espece == ind2->espece &&
         ind1->tours_depuis_repro > ind1->espece->intervalle_repro &&
         ind2->tours_depuis_repro > ind2->espece->intervalle_repro) {
@@ -421,5 +429,8 @@ void reproduire(Individu *ind1, Individu *ind2, Individu *individus[], int *nb_i
         // je remet les compteurs de reproduction a zero
         ind1->tours_depuis_repro = 0;
         ind2->tours_depuis_repro = 0;
+
+        return 1;  // reproduction reussie
     }
+    return 0;  // conditions pas remplies
 }

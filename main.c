@@ -16,6 +16,9 @@
 #define ETAT_PARAMETRES  1
 #define ETAT_SIMULATION  2
 
+// rayon d'action de chaque individu
+#define RAYON_ACTION 50
+
 int main(void) {
 
 /* 1. Initialisation SDL*/
@@ -340,11 +343,30 @@ while (running) {
                         event.button.y >= bouton_sim_etape.y &&
                         event.button.y <= bouton_sim_etape.y + bouton_sim_etape.h) {
                         for (int i = 0; i < nb_individus; i++) {
-                            if (individus[i]->vivant == 1)
+                            if (individus[i]->vivant == 1){
                                 deplacer_individu(individus[i]);
                                 mourir_de_faim(individus[i]);
                                 mourir_de_vieillesse(individus[i]);
                                 individus[i]->tours_depuis_repro++;
+
+                                // on cherche avec qui interagir dans le rayon d'action
+                                for (int j = i + 1; j < nb_individus; j++) {
+                                    if (individus[j]->vivant == 1){
+                                        if (distance(individus[i], individus[j]) <= RAYON_ACTION) {
+                                            int action_faite = 0;
+                                            if (!action_faite){
+                                                action_faite = reproduire(individus[i], individus[j], individus, &nb_individus);
+                                            }
+                                            if (!action_faite){
+                                                action_faite = manger(individus[i], individus[j]);
+                                            }
+                                            if (!action_faite){
+                                                manger(individus[j], individus[i]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -613,17 +635,36 @@ while (running) {
         SDL_RenderCopy(ren, texte_sim_accel, NULL, &dst_sim_accel);
 
 
-        // mouvement + faim (chaque tour)
+        // mouvement + faim (chaque tour) + verification de possibilité d'action
         if (simulation_active == 1) {
             Uint32 maintenant = SDL_GetTicks();
             if (maintenant - dernier_tour >= (Uint32)delai_tour) {
                 for (int i = 0; i < nb_individus; i++) {
-                    if (individus[i]->vivant == 1)
-                        deplacer_individu(individus[i]);
-                        mourir_de_faim(individus[i]);
-                        mourir_de_vieillesse(individus[i]);
-                        individus[i]->tours_depuis_repro++;
-                }
+                            if (individus[i]->vivant == 1){
+                                deplacer_individu(individus[i]);
+                                mourir_de_faim(individus[i]);
+                                mourir_de_vieillesse(individus[i]);
+                                individus[i]->tours_depuis_repro++;
+
+                                // on cherche avec qui interagir dans le rayon d'action
+                                for (int j = i + 1; j < nb_individus; j++) {
+                                    if (individus[j]->vivant == 1){
+                                        if (distance(individus[i], individus[j]) <= RAYON_ACTION) {
+                                            int action_faite = 0;
+                                            if (!action_faite){
+                                                action_faite = reproduire(individus[i], individus[j], individus, &nb_individus);
+                                            }
+                                            if (!action_faite){
+                                                action_faite = manger(individus[i], individus[j]);
+                                            }
+                                            if (!action_faite){
+                                                manger(individus[j], individus[i]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 dernier_tour = maintenant;
             }
         }
