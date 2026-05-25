@@ -605,7 +605,7 @@ while (running) {
     }
 
     else if (etat == ETAT_SIMULATION) {
-        
+
         // fond noir pour la simulation
         SDL_Rect zone_monde = {0, 0, 1000, 800};
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
