@@ -774,6 +774,7 @@ while (running) {
             }
         } 
 
+
         // copie pour le tri - on ne modifie pas toutes_especes original
         Espece *especes_triees[11];
         for (int i = 0; i < 11; i++)
@@ -790,10 +791,20 @@ while (running) {
             }
         }
 
+        // titre de la liste
+        SDL_Surface *surf_titre = TTF_RenderUTF8_Blended(font, "Especes vivantes", blanc_casse);
+        SDL_Texture *texte_titre = SDL_CreateTextureFromSurface(ren, surf_titre);
+        SDL_FreeSurface(surf_titre);
+        int wt, ht;
+        SDL_QueryTexture(texte_titre, NULL, NULL, &wt, &ht);
+        SDL_Rect dst_titre = {1000 + (400 - wt) / 2, 40, wt, ht};
+        SDL_RenderCopy(ren, texte_titre, NULL, &dst_titre);
+        SDL_DestroyTexture(texte_titre);
+
         // afficher sans les zeros
         int ligne_stat = 0;
         for (int i = 0; i < 11; i++) {
-            if (especes_triees[i]->nb_individus_vivants == 0) continue;
+            if (especes_triees[i]->nb_individus_vivants <= 0) continue;
 
             char texte_stat[60];
             snprintf(texte_stat, sizeof(texte_stat), "%s : %d",
@@ -805,7 +816,7 @@ while (running) {
             SDL_FreeSurface(surf_stat);
             int w, h;
             SDL_QueryTexture(texte_liste, NULL, NULL, &w, &h);
-            SDL_Rect dst_stat = {1010, 50 + ligne_stat * 25, w, h};
+            SDL_Rect dst_stat = {1000 + (400 - w) / 2, 80 + ligne_stat * 25, w, h};
             SDL_RenderCopy(ren, texte_liste, NULL, &dst_stat);
             SDL_DestroyTexture(texte_liste);
 
