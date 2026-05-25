@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "creatures.h"
+#include "creatures.c"
 #include <stdlib.h>
 #include <time.h>
 
