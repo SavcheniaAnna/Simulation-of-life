@@ -122,6 +122,7 @@ Individu *creer_individu(Espece *espece, int x, int y);
 
 void deplacer_individu(Individu *ind);
 
+void mourir_parasite(Parasite *p);
 void mourir(Individu *ind);
 void mourir_de_faim(Individu *ind);
 void mourir_de_vieillesse(Individu *ind);

@@ -222,6 +222,16 @@ SDL_QueryTexture(texte_sim_accel, NULL, NULL, &wsa, &hsa);
 // on vérifie si on a accélération
 int accel_active = 0;
 
+// On a besoin de créer ce tableu, car on passe une espèce en paramètre à la fonction creer_individu, mais on sait pas quelle espèce correspond à quel index de nb_par_espece
+Espece *toutes_especes[11] = {
+    &especes_predateurs[0], &especes_predateurs[1],
+    &especes_herbivores[0], &especes_herbivores[1],
+    &especes_oiseaux[0],    &especes_oiseaux[1],
+    &especes_poissons[0],   &especes_poissons[1],
+    &especes_parasites[0],  &especes_parasites[1],
+    &especes_herbes[0]
+};
+
 
 
 /* 3. Boucle principale */
@@ -305,16 +315,6 @@ while (running) {
                     nb_individus = 0;
                     nb_parasites = 0;
 
-                    // On a besoin de créer ce tableu, car on passe une espèce en paramètre à la fonction creer_individu, mais on sait pas quelle espèce correspond à quel index de nb_par_espece
-                    Espece *toutes_especes[11] = {
-                        &especes_predateurs[0], &especes_predateurs[1],
-                        &especes_herbivores[0], &especes_herbivores[1],
-                        &especes_oiseaux[0],    &especes_oiseaux[1],
-                        &especes_poissons[0],   &especes_poissons[1],
-                        &especes_parasites[0],  &especes_parasites[1],
-                        &especes_herbes[0]
-                    };
-
                     for (int e = 0; e < 11; e++) {
                         for (int i = 0; i < nb_par_espece[e]; i++) {
                             if (e == 8 || e == 9){
@@ -382,7 +382,16 @@ while (running) {
                             for (int p = 0; p < nb_individus; p++) {
                                 if (individus[p]->vivant == 1 && individus[p]->est_infecte == 1)
                                     attaquer_victime(individus[p]);
-}
+                            }
+
+                            for (int p = 0; p < nb_parasites; p++) {
+                                if (parasites[p]->vivant == 1) {
+                                    parasites[p]->duree_vie--;
+                                    if (parasites[p]->duree_vie <= 0){
+                                        mourir_parasite(parasites[p]);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -682,16 +691,25 @@ while (running) {
                             }
                         }
 
-                for (int i = 0; i < nb_parasites; i++) {
-                    if (parasites[i]->vivant == 1)
-                        infecter(parasites[i], individus, nb_individus);
+                for (int p = 0; p < nb_parasites; p++) {
+                    if (parasites[p]->vivant == 1)
+                        infecter(parasites[p], individus, nb_individus);
                 }
 
-                for (int i = 0; i < nb_individus; i++) {
-                    if (individus[i]->vivant == 1 && individus[i]->est_infecte == 1)
-                        attaquer_victime(individus[i]);
+                for (int p = 0; p < nb_individus; p++) {
+                    if (individus[p]->vivant == 1 && individus[p]->est_infecte == 1)
+                        attaquer_victime(individus[p]);
                 }
                 
+                for (int p = 0; p < nb_parasites; p++) {
+                    if (parasites[p]->vivant == 1) {
+                        parasites[p]->duree_vie--;
+                        if (parasites[p]->duree_vie <= 0){
+                            mourir_parasite(parasites[p]);
+                        }
+                    }
+                }
+
                 dernier_tour = maintenant;
             }
         }
@@ -755,6 +773,45 @@ while (running) {
                 SDL_RenderFillRect(ren, &rect);
             }
         } 
+
+        // copie pour le tri - on ne modifie pas toutes_especes original
+        Espece *especes_triees[11];
+        for (int i = 0; i < 11; i++)
+            especes_triees[i] = toutes_especes[i];
+
+        // tri par ordre decroissant
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10 - i; j++) {
+                if (especes_triees[j]->nb_individus_vivants < especes_triees[j + 1]->nb_individus_vivants) {
+                    Espece *tmp = especes_triees[j];
+                    especes_triees[j] = especes_triees[j + 1];
+                    especes_triees[j + 1] = tmp;
+                }
+            }
+        }
+
+        // afficher sans les zeros
+        int ligne_stat = 0;
+        for (int i = 0; i < 11; i++) {
+            if (especes_triees[i]->nb_individus_vivants == 0) continue;
+
+            char texte_stat[60];
+            snprintf(texte_stat, sizeof(texte_stat), "%s : %d",
+                especes_triees[i]->nom,
+                especes_triees[i]->nb_individus_vivants);
+
+            SDL_Surface *surf_stat = TTF_RenderUTF8_Blended(font, texte_stat, blanc_casse);
+            SDL_Texture *texte_liste = SDL_CreateTextureFromSurface(ren, surf_stat);
+            SDL_FreeSurface(surf_stat);
+            int w, h;
+            SDL_QueryTexture(texte_liste, NULL, NULL, &w, &h);
+            SDL_Rect dst_stat = {1010, 50 + ligne_stat * 25, w, h};
+            SDL_RenderCopy(ren, texte_liste, NULL, &dst_stat);
+            SDL_DestroyTexture(texte_liste);
+
+            ligne_stat++;
+        }
+
     }
 
     // Affichage du frame

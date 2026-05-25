@@ -139,7 +139,7 @@ void initialiser_especes(void)
     especes_herbes[0].type = &type_herbe;
     especes_herbes[0].nb_individus_vivants = 0;
     especes_herbes[0].sante = 40;
-    especes_herbes[0].intervalle_repro = 3;
+    especes_herbes[0].intervalle_repro = 14;
     especes_herbes[0].valeur_nutritive = 30;
     especes_herbes[0].age_max = 100;
 }
@@ -293,11 +293,22 @@ void deplacer_individu(Individu *ind)
 }
 
 
+void mourir_parasite(Parasite *p)
+{
+    if (p->vivant == 0) return;
+    p->vivant = 0;
+    p->a_infecte = 0;
+    p->espece->nb_individus_vivants--;
+    p->espece->type->nb_individus_vivants--;
+}
+
 void mourir(Individu *ind) {
+
+    if (ind->vivant == 0) return;  // si déjà mort, on fait rien
 
     // si l'individu est infecté le parasite meurt avec lui
     if (ind->parasite != NULL)
-        ind->parasite->vivant = 0;
+        mourir_parasite(ind->parasite);
 
     ind->vivant = 0;
     ind->espece->nb_individus_vivants--;
