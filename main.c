@@ -24,18 +24,18 @@ int main(void) {
 
 /* 1. Initialisation SDL*/
 if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
+    printf("SDL_Init: %s\n", SDL_GetError());
     return 1;
 }
 
 // Initialiser SDL_image
 if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-    fprintf(stderr, "IMG_Init: %s\n", IMG_GetError());
+    printf("IMG_Init: %s\n", IMG_GetError());
 }
 
 // Initialiser SDL_ttf
 if (TTF_Init() != 0) {
-fprintf(stderr, "TTF_Init: %s\n", TTF_GetError());
+printf("TTF_Init: %s\n", TTF_GetError());
 }
 
 
@@ -70,7 +70,7 @@ int nb_parasites = 0;
 SDL_Texture *fond_menu = IMG_LoadTexture(ren, "assets/fond_menu.png");
 SDL_Texture *fond_parametres = IMG_LoadTexture(ren, "assets/fond_parametres.png");
 if (!fond_menu || !fond_parametres) {
-    fprintf(stderr, "IMG_LoadTexture: %s\n", IMG_GetError());
+    printf("IMG_LoadTexture: %s\n", IMG_GetError());
 }
 
 // Definir ou la placer (NULL = toute la fenetre)
@@ -81,7 +81,7 @@ SDL_Rect dst = {0, 0, LARGEUR, HAUTEUR};
 // J'ai décidé que je veux utiliser un beaux font, donc je l'ai choisi et charger sur le site google fonts
 TTF_Font *font = TTF_OpenFont("assets/Exo2-Medium.ttf", 15);
 if (!font) {
-    fprintf(stderr, "TTF_OpenFont: %s\n", TTF_GetError());
+    printf("TTF_OpenFont: %s\n", TTF_GetError());
 }
 
 // Texte pour le Menu

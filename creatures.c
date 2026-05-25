@@ -167,7 +167,7 @@ Individu *creer_individu(Espece *espece, int x, int y)
     Individu *ind = malloc(sizeof(Individu));
 
     if (ind == NULL) {
-        fprintf(stderr, "Erreur malloc individu\n");
+        printf("Erreur malloc individu\n");
         return NULL;
     }
 
@@ -234,7 +234,7 @@ Parasite *creer_parasite(Espece *espece)
     Parasite *p = malloc(sizeof(Parasite));
 
     if (p == NULL) {
-        fprintf(stderr, "Erreur malloc parasite\n");
+        printf("Erreur malloc parasite\n");
         return NULL;
     }
 
