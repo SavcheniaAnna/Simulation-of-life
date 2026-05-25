@@ -17,7 +17,7 @@
 #define ETAT_SIMULATION  2
 
 // rayon d'action de chaque individu
-#define RAYON_ACTION 50
+#define RAYON_ACTION 80
 
 int main(void) {
 
@@ -302,6 +302,7 @@ while (running) {
             
                     // initialiser les individus, sachant les valeurs des parametres
                     nb_individus = 0;
+                    nb_parasites = 0;
 
                     // On a besoin de créer ce tableu, car on passe une espèce en paramètre à la fonction creer_individu, mais on sait pas quelle espèce correspond à quel index de nb_par_espece
                     Espece *toutes_especes[11] = {
@@ -363,10 +364,24 @@ while (running) {
                                             if (!action_faite){
                                                 manger(individus[j], individus[i]);
                                             }
+
+                                            if (action_faite){
+                                                break;  // on sort de la boucle for (j) -> l'individu i a fini son tour
+                                            }
                                         }
                                     }
                                 }
                             }
+
+                            // parasites infectent et attaquent
+                            for (int p = 0; p < nb_parasites; p++) {
+                                if (parasites[p]->vivant == 1)
+                                    infecter(parasites[p], individus, nb_individus);
+                            }
+                            for (int p = 0; p < nb_individus; p++) {
+                                if (individus[p]->vivant == 1 && individus[p]->est_infecte == 1)
+                                    attaquer_victime(individus[p]);
+}
                         }
                     }
                 }
@@ -665,6 +680,17 @@ while (running) {
                                 }
                             }
                         }
+
+                for (int i = 0; i < nb_parasites; i++) {
+                    if (parasites[i]->vivant == 1)
+                        infecter(parasites[i], individus, nb_individus);
+                }
+
+                for (int i = 0; i < nb_individus; i++) {
+                    if (individus[i]->vivant == 1 && individus[i]->est_infecte == 1)
+                        attaquer_victime(individus[i]);
+                }
+                
                 dernier_tour = maintenant;
             }
         }
@@ -703,13 +729,42 @@ while (running) {
 
                 SDL_Rect rect = {individus[i]->x, individus[i]->y, individus[i]->taille, individus[i]->taille};
                 SDL_RenderFillRect(ren, &rect);
+
+                // contour violet si infecté
+                if (individus[i]->est_infecte == 1) {
+                    if (individus[i]->parasite->espece == &especes_parasites[0]){
+                        SDL_SetRenderDrawColor(ren, 180, 0, 255, 255);
+                    }
+                    else{
+                        SDL_SetRenderDrawColor(ren, 120, 0, 180, 255);
+                    }
+                    SDL_RenderDrawRect(ren, &rect);
+                }
             }
         }
+
+        // afficher les parasites
+        for (int i = 0; i < nb_parasites; i++) {
+            if (parasites[i]->vivant == 1 && parasites[i]->a_infecte == 0) {
+                if (parasites[i]->espece == &especes_parasites[0])
+                    SDL_SetRenderDrawColor(ren, 180, 0, 255, 255);
+                else
+                    SDL_SetRenderDrawColor(ren, 120, 0, 180, 255);
+                SDL_Rect rect = {parasites[i]->x, parasites[i]->y, 5, 5};
+                SDL_RenderFillRect(ren, &rect);
+            }
+        } 
     }
 
     // Affichage du frame
     SDL_RenderPresent(ren);
 }
+
+// je libére la mémoire
+for (int i = 0; i < nb_individus; i++)
+    free(individus[i]);
+for (int i = 0; i < nb_parasites; i++)
+    free(parasites[i]);
 
 /* 4. Nettoyage */
 TTF_CloseFont(font);
