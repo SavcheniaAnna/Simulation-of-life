@@ -409,6 +409,32 @@ while (running) {
                         delai_tour = 200;  // vitesse normale
                     }
                 }
+
+                // clic Revenir
+                if (event.button.x >= bouton_rev.x &&
+                    event.button.x <= bouton_rev.x + bouton_rev.w &&
+                    event.button.y >= bouton_rev.y &&
+                    event.button.y <= bouton_rev.y + bouton_rev.h) {
+                    etat = ETAT_MENU;
+                    for (int i = 0; i < nb_individus; i++) {
+                        free(individus[i]);
+                        individus[i] = NULL;
+                    }
+
+                    for (int i = 0; i < nb_parasites; i++) {
+                        free(parasites[i]);
+                        parasites[i] = NULL;
+                    }
+
+                    nb_individus = 0;
+                    nb_parasites = 0;
+                    initialiser_types();
+                    initialiser_especes();
+
+                    simulation_active = 0;
+                    accel_active = 0;
+                    delai_tour = 200;
+                }
             }
         }
 
@@ -821,6 +847,24 @@ while (running) {
             SDL_DestroyTexture(texte_liste);
 
             ligne_stat++;
+        }
+
+        // Si la simulation est finie, on affiche un bouton Revenir pour retourner au menu
+
+        // on calcule le total de vivants
+        int total_vivants = 0;
+        for (int i = 0; i < 11; i++) {
+            total_vivants += toutes_especes[i]->nb_individus_vivants;
+        }
+
+        if (simulation_active == 1 && total_vivants <= 0) {
+            SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
+            SDL_RenderFillRect(ren, &bouton_rev);
+            SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);
+            SDL_RenderDrawRect(ren, &bouton_rev);
+            SDL_Rect dst_btn_rev = {bouton_rev.x + (bouton_rev.w - wbr) / 2,
+                                    bouton_rev.y + (bouton_rev.h - hbr) / 2, wbr, hbr};
+            SDL_RenderCopy(ren, texte_btn_rev, NULL, &dst_btn_rev);
         }
 
     }
