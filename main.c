@@ -233,6 +233,19 @@ Espece *toutes_especes[11] = {
 };
 
 
+// Charger les textures (images) pour les animaux
+SDL_Texture* tex_predateur1 = IMG_LoadTexture(ren, "assets/dinosaures/Tyrannosaurus.png");
+SDL_Texture* tex_predateur2 = IMG_LoadTexture(ren, "assets/dinosaures/Carnotaurus.png");
+SDL_Texture* tex_herbivore1 = IMG_LoadTexture(ren, "assets/dinosaures/Triceratops.png");
+SDL_Texture* tex_herbivore2 = IMG_LoadTexture(ren, "assets/dinosaures/Stegosaurus.png");
+SDL_Texture* tex_oiseau1    = IMG_LoadTexture(ren, "assets/dinosaures/Quetzalcoatlus.png");
+SDL_Texture* tex_oiseau2    = IMG_LoadTexture(ren, "assets/dinosaures/Pteranodon.png");
+SDL_Texture* tex_poisson1   = IMG_LoadTexture(ren, "assets/dinosaures/Enchodus.png");
+SDL_Texture* tex_poisson2   = IMG_LoadTexture(ren, "assets/dinosaures/Lepidotes.png");
+SDL_Texture* tex_herbe1     = IMG_LoadTexture(ren, "assets/dinosaures/Fougeres.png");
+
+
+
 
 /* 3. Boucle principale */
 int running = 1;
@@ -739,48 +752,55 @@ while (running) {
                 dernier_tour = maintenant;
             }
         }
+        
 
-        // dessiner tous les individus
+        // Dessiner tous les individus
         for (int i = 0; i < nb_individus; i++) {
-            if (individus[i]->vivant == 1){
+            if (individus[i]->vivant == 1) {
 
-                // couleur selon l'espece
+                SDL_Texture* texture_a_afficher = NULL;
+
+                // Sélection de la texture selon l'espèce
                 if (individus[i]->espece == &especes_predateurs[0])
-                    SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
+                    texture_a_afficher = tex_predateur1;
 
                 else if (individus[i]->espece == &especes_predateurs[1])
-                    SDL_SetRenderDrawColor(ren, 180, 0, 0, 255);
+                    texture_a_afficher = tex_predateur2;
 
                 else if (individus[i]->espece == &especes_herbivores[0])
-                    SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
+                    texture_a_afficher = tex_herbivore1;
 
                 else if (individus[i]->espece == &especes_herbivores[1])
-                    SDL_SetRenderDrawColor(ren, 0, 180, 0, 255);
+                    texture_a_afficher = tex_herbivore2;
 
                 else if (individus[i]->espece == &especes_oiseaux[0])
-                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+                    texture_a_afficher = tex_oiseau1;
 
                 else if (individus[i]->espece == &especes_oiseaux[1])
-                    SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
+                    texture_a_afficher = tex_oiseau2;
 
                 else if (individus[i]->espece == &especes_poissons[0])
-                    SDL_SetRenderDrawColor(ren, 0, 150, 255, 255);
+                    texture_a_afficher = tex_poisson1;
 
                 else if (individus[i]->espece == &especes_poissons[1])
-                    SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+                    texture_a_afficher = tex_poisson2;
 
                 else if (individus[i]->espece == &especes_herbes[0])
-                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+                    texture_a_afficher = tex_herbe1;
 
+                // Définition de la position et taille du dinosaure
                 SDL_Rect rect = {individus[i]->x, individus[i]->y, individus[i]->taille, individus[i]->taille};
-                SDL_RenderFillRect(ren, &rect);
 
-                // contour violet si infecté
+                // Affichage de l'image PNG si la texture existe
+                if (texture_a_afficher != NULL) {
+                    SDL_RenderCopy(ren, texture_a_afficher, NULL, &rect);
+                }
+
+                // Contour violet si infecté (dessiné par-dessus la texture)
                 if (individus[i]->est_infecte == 1) {
-                    if (individus[i]->parasite->espece == &especes_parasites[0]){
+                    if (individus[i]->parasite->espece == &especes_parasites[0]) {
                         SDL_SetRenderDrawColor(ren, 180, 0, 255, 255);
-                    }
-                    else{
+                    } else {
                         SDL_SetRenderDrawColor(ren, 120, 0, 180, 255);
                     }
                     SDL_RenderDrawRect(ren, &rect);
