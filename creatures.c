@@ -276,17 +276,17 @@ void deplacer_individu(Individu *ind)
     int nouveau_y = ind->y + dy;
 
     // on verifie les limites de la zone de simulation
-    if (nouveau_x < 10)
-        nouveau_x = 10;
+    if (nouveau_x < 20)
+        nouveau_x = 20;
 
-    if (nouveau_x > 980)
-        nouveau_x = 980;
+    if (nouveau_x > 940)
+        nouveau_x = 940;
 
-    if (nouveau_y < 10)
-        nouveau_y = 10;
+    if (nouveau_y < 20)
+        nouveau_y = 20;
 
-    if (nouveau_y > 780)
-        nouveau_y = 780;
+    if (nouveau_y > 730)
+        nouveau_y = 730;
 
     ind->x = nouveau_x;
     ind->y = nouveau_y;

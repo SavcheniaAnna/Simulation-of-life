@@ -789,7 +789,7 @@ while (running) {
                     texture_a_afficher = tex_herbe1;
 
                 // Définition de la position et taille du dinosaure
-                SDL_Rect rect = {individus[i]->x, individus[i]->y, individus[i]->taille, individus[i]->taille};
+                SDL_Rect rect = {individus[i]->x, individus[i]->y, individus[i]->taille*6, individus[i]->taille*6};
 
                 // Affichage de l'image PNG si la texture existe
                 if (texture_a_afficher != NULL) {
@@ -872,12 +872,15 @@ while (running) {
         // Si la simulation est finie, on affiche un bouton Revenir pour retourner au menu
 
         // on calcule le total de vivants
-        int total_vivants = 0;
-        for (int i = 0; i < 11; i++) {
-            total_vivants += toutes_especes[i]->nb_individus_vivants;
+        int nb_animaux_vivants = 0;
+        for (int i = 0; i < 10; i++) { // Les indices 0 à 9 correspondent aux animaux et parasites, PAS LES FOUGERES
+            nb_animaux_vivants += toutes_especes[i]->nb_individus_vivants;
         }
 
-        if (simulation_active == 1 && total_vivants <= 0) {
+        int nb_fougeres = toutes_especes[10]->nb_individus_vivants; // Indice 10 = Fougere
+        int total_vivants = nb_animaux_vivants + nb_fougeres;
+
+        if (simulation_active == 1 && (total_vivants <= 0 || (nb_animaux_vivants == 0 && nb_fougeres > 70))) { // Si tout le monde est mort ou il y reste que des fougères, on arrête la simulation
             SDL_SetRenderDrawColor(ren, 92, 78, 52, 255);
             SDL_RenderFillRect(ren, &bouton_rev);
             SDL_SetRenderDrawColor(ren, 140, 125, 90, 255);

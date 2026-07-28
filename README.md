@@ -31,3 +31,6 @@ Liste des espèces vivantes triée par nombre d'individus décroissant.
 
 ## Choix techniques
 J'ai décidé de séparer la logique des créatures dans `creatures.c` et `creatures.h` pour ne pas surcharger `main.c`. Les structures `Type`, `Espece`, `Individu` et `Parasite` sont manipulées via des tableaux de pointeurs.
+
+## Commande pour une compilation
+gcc main.c -o mon_prog $(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_ttf -lm
